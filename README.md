@@ -2,6 +2,10 @@
 
 A DirectShow source filter that outputs the monitor.
 
+## Requirements
+
+Windows 8 (Currently)
+
 ## Installation
 
 Run Install.bat from an elevated command prompt.
@@ -24,7 +28,7 @@ Select "Desktop Source" as a Source filter in any DirectShow application (GraphE
 
 ## History
 
-Version 1.0: (Basic Windows 8 SUpport, Only outputs entire desktop at constant framerate)
+Version 1.0: (Windows 8 SUpport, Only outputs entire desktop at constant framerate)
 
 ## Credits
 
