@@ -139,8 +139,8 @@ namespace DesktopSource
             _caps.ShrinkTapsY = 0;
             _caps.MinFrameInterval = (m_Filter as DesktopSource).m_nAvgTimePerFrame;
             _caps.MaxFrameInterval = (m_Filter as DesktopSource).m_nAvgTimePerFrame;
-            _caps.MinBitsPerSecond = (_caps.MinOutputSize.Width * _caps.MinOutputSize.Height * 32) * (int)(m_Filter as Win8DesktopDupSource).m_nAvgTimePerFrame;
-            _caps.MaxBitsPerSecond = (_caps.MaxOutputSize.Width * _caps.MaxOutputSize.Height * 32) * (int)(m_Filter as Win8DesktopDupSource).m_nAvgTimePerFrame;
+            _caps.MinBitsPerSecond = (_caps.MinOutputSize.Width * _caps.MinOutputSize.Height * 32) * (int)(m_Filter as DesktopSource).m_nAvgTimePerFrame;
+            _caps.MaxBitsPerSecond = (_caps.MaxOutputSize.Width * _caps.MaxOutputSize.Height * 32) * (int)(m_Filter as DesktopSource).m_nAvgTimePerFrame;
 
 
             if (ppmt != IntPtr.Zero)

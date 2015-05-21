@@ -79,7 +79,7 @@ namespace DesktopSource
 
         protected override int OnInitializePins()
         {
-            AddPin(new Win8DesktopDupStream("Output", this));
+            AddPin(new DesktopStream("Output", this));
 
             return NOERROR;
         }
