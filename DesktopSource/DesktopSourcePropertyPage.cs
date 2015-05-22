@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -19,6 +20,27 @@ namespace DesktopSource
         public DesktopSourcePropertyPage()
         {
             InitializeComponent();
+
+            //InitializeCaptureMonitors();
+            //InitializeCaptureWindows();
+        }
+
+        private void InitializeCaptureWindows()
+        {
+            Process[] processlist = Process.GetProcesses();
+
+            foreach (Process process in processlist)
+            {
+                if (!String.IsNullOrEmpty(process.MainWindowTitle))
+                {
+                    this.captureMethodCombo.Items.Add(process.ProcessName);
+                }
+            }
+        }
+
+        private void InitializeCaptureMonitors()
+        {
+            
         }
     }
 }

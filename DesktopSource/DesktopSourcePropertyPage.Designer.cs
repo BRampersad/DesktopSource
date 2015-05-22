@@ -28,24 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.captureMethodCombo = new System.Windows.Forms.ComboBox();
+            this.captureLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label1
+            // captureMethodCombo
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(198, 187);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(240, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Created By Brandon Rampersad";
+            this.captureMethodCombo.FormattingEnabled = true;
+            this.captureMethodCombo.Location = new System.Drawing.Point(94, 17);
+            this.captureMethodCombo.Name = "captureMethodCombo";
+            this.captureMethodCombo.Size = new System.Drawing.Size(550, 28);
+            this.captureMethodCombo.TabIndex = 0;
+            // 
+            // captureLabel
+            // 
+            this.captureLabel.AutoSize = true;
+            this.captureLabel.Location = new System.Drawing.Point(12, 20);
+            this.captureLabel.Name = "captureLabel";
+            this.captureLabel.Size = new System.Drawing.Size(66, 20);
+            this.captureLabel.TabIndex = 1;
+            this.captureLabel.Text = "Capture";
             // 
             // DesktopSourcePropertyPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(656, 455);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.captureLabel);
+            this.Controls.Add(this.captureMethodCombo);
             this.Name = "DesktopSourcePropertyPage";
             this.Text = "DesktopSourcePropertyPage";
             this.Title = "DesktopSourcePropertyPage";
@@ -56,6 +66,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox captureMethodCombo;
+        private System.Windows.Forms.Label captureLabel;
+
     }
 }

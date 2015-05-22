@@ -5,16 +5,35 @@ using DirectShow.BaseClasses;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
+using Sonic;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 
 namespace DesktopSource
 {
+
+    [ComVisible(true)]
+    [Guid("0160C224-D299-4EA0-8E2B-53A298E72909")]
+    public interface IChangeCaptureSettings
+    {
+        HRESULT ChangeCaptureSettings(CaptureSettings newSettings);
+    }
+
+    [ComVisible(true)]
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CaptureSettings
+    {
+        public int m_Adapter { get; set; }
+        public int m_Output { get; set; }
+        public int m_Width { get; set; }
+        public int m_Height { get; set; }
+    }
+
     [ComVisible(true)]
     [Guid("3741E463-EE30-4301-B9C8-A0685F9781C6")]
     [AMovieSetup(Merit.Normal, AMovieSetup.CLSID_VideoInputDeviceCategory)]
     [PropPageSetup(typeof(DesktopSourcePropertyPage))]
-    public class DesktopSource : BaseSourceFilter
+    public class DesktopSource : BaseSourceFilter, IChangeCaptureSettings
     {
         public int m_nWidth { get; private set; }
         public int m_nHeight { get; private set; }
@@ -60,6 +79,43 @@ namespace DesktopSource
             m_ScreenTexture = new Texture2D(m_Device, textureDesc);
 
             m_DuplicatedOutput = m_Output.DuplicateOutput(m_Device);
+        }
+
+        public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
+        {
+            Dispose();
+
+            m_Factory = new Factory1();
+            m_Adapter = m_Factory.GetAdapter1(newSettings.m_Adapter);
+            m_Device = new Device(m_Adapter);
+
+            Output output = m_Adapter.GetOutput(newSettings.m_Output);
+            m_Output = output.QueryInterface<Output1>();
+
+            m_nWidth = newSettings.m_Width;
+            m_nHeight = newSettings.m_Height;
+            m_nAvgTimePerFrame = UNITS / 30;
+
+            Texture2DDescription textureDesc = new Texture2DDescription
+            {
+                CpuAccessFlags = CpuAccessFlags.Read,
+                BindFlags = BindFlags.None,
+                Format = Format.B8G8R8A8_UNorm,
+                Width = m_nWidth,
+                Height = m_nHeight,
+                OptionFlags = ResourceOptionFlags.None,
+                MipLevels = 1,
+                ArraySize = 1,
+                SampleDescription = { Count = 1, Quality = 0 },
+                Usage = ResourceUsage.Staging
+            };
+
+            m_ScreenTexture = new Texture2D(m_Device, textureDesc);
+
+            m_DuplicatedOutput = m_Output.DuplicateOutput(m_Device);
+
+
+            return S_OK;
         }
 
         ~DesktopSource()
