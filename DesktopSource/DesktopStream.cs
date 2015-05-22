@@ -14,6 +14,7 @@ namespace DesktopSource
 {
     // Output Pin (STreams the desktop frames)
     [ComVisible(true)]
+    [Guid("47A3CC6B-887D-4DEA-9654-002D1190EBC7")]
     public class DesktopStream : SourceStream, IAMStreamConfig
     {
         public DesktopStream(string _name, BaseSourceFilter _filter) : base(_name, _filter) { }
