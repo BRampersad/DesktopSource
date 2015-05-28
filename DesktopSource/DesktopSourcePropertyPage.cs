@@ -20,13 +20,14 @@ namespace DesktopSource
     [Guid("BC7F9A0C-00DF-460F-A39E-DD9C9098411A")]
     public partial class DesktopSourcePropertyPage : BasePropertyPage
     {
-        public IChangeCaptureSettings m_Settings { get; set; }
-        private class Item
+        public IChangeCaptureSettings m_FilterSettings { get; set; }
+
+        private class CaptureItem
         {
             public string m_Name { get; set; }
             public CaptureSettings m_CaptureSettings { get; set; }
 
-            public Item(string name, CaptureSettings settings)
+            public CaptureItem(string name, CaptureSettings settings)
             {
                 m_Name = name;
                 m_CaptureSettings = settings;
@@ -42,6 +43,7 @@ namespace DesktopSource
         {
             InitializeComponent();
 
+            captureMethodCombo.Items.Clear();
             InitializeCaptureMonitors();
             InitializeCaptureWindows();
         }
@@ -53,6 +55,7 @@ namespace DesktopSource
 
         private void InitializeCaptureMonitors()
         {
+
             var factory = new Factory1();
 
             for (int i = 0; i < factory.GetAdapterCount(); i++)
@@ -71,8 +74,8 @@ namespace DesktopSource
                         output.Description.DesktopBounds.Bottom
                     );
 
-                    Item item = new Item(output.Description.DeviceName, settings);
-                    captureMethodCombo.Items.Add(item);
+                    CaptureItem captureItem = new CaptureItem(output.Description.DeviceName, settings);
+                    captureMethodCombo.Items.Add(captureItem);
                 }
             }
         }
@@ -96,9 +99,9 @@ namespace DesktopSource
 
                 captureSettings.m_Rect = new DsRect(rct.Left, rct.Top, rct.Right, rct.Bottom);
 
-                Item item = new Item(sb.ToString(), captureSettings);
+                CaptureItem captureItem = new CaptureItem(sb.ToString(), captureSettings);
 
-                this.captureMethodCombo.Items.Add(item);
+                this.captureMethodCombo.Items.Add(captureItem);
             }
 
             return true; 
@@ -106,24 +109,24 @@ namespace DesktopSource
 
         public override HRESULT OnConnect(IntPtr pUnknown)
         {
-            m_Settings = (IChangeCaptureSettings) Marshal.GetObjectForIUnknown(pUnknown);
+            m_FilterSettings = (IChangeCaptureSettings) Marshal.GetObjectForIUnknown(pUnknown);
 
             return HRESULT.NOERROR;
         }
 
         public override HRESULT OnDisconnect()
         {
-            m_Settings = null;
+            m_FilterSettings = null;
 
             return HRESULT.NOERROR;
         }
 
         public override HRESULT OnApplyChanges()
         {
-            if (m_Settings != null && captureMethodCombo.SelectedItem != null)
+            if (m_FilterSettings != null && captureMethodCombo.SelectedItem != null)
             {
-                Item setting = (captureMethodCombo.SelectedItem as Item);
-                return (HRESULT) m_Settings.ChangeCaptureSettings(setting.m_CaptureSettings);
+                CaptureItem setting = (captureMethodCombo.SelectedItem as CaptureItem);
+                return (HRESULT) m_FilterSettings.ChangeCaptureSettings(setting.m_CaptureSettings);
             }
 
             return HRESULT.NOERROR;
@@ -156,7 +159,23 @@ namespace DesktopSource
 
         private void captureMethodCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
+            CaptureSettings newSettings = ((CaptureItem) captureMethodCombo.SelectedItem).m_CaptureSettings;
+            adapterTxtBox.Text = newSettings.m_Adapter.ToString();
+            outputTxtBox.Text = newSettings.m_Output.ToString();
+            topTextBox.Text = newSettings.m_Rect.top.ToString();
+            leftTextBox.Text = newSettings.m_Rect.left.ToString();
+            rightTextBox.Text = newSettings.m_Rect.right.ToString();
+            bottomTextBox.Text = newSettings.m_Rect.bottom.ToString();
+
             this.Dirty = true;
+        }
+
+        private void refreshBtn_Click(object sender, EventArgs e)
+        {
+            captureMethodCombo.Items.Clear();
+
+            InitializeCaptureMonitors();
+            InitializeCaptureWindows();
         }
     }
 }
