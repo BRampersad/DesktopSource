@@ -36,8 +36,6 @@ namespace DesktopSource
 
         public DesktopStream(string _name, BaseSourceFilter _filter) : base(_name, _filter)
         {
-            Debugger.Launch();
-
             m_Factory = new Factory1();
 
             m_nAvgTimePerFrame = UNITS / 30;
@@ -52,50 +50,53 @@ namespace DesktopSource
 
 
 
+
+
         public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
         {
 
-            m_NumAdapter = newSettings.m_Adapter;
-            m_NumOutput = newSettings.m_Output;
-            m_nWidth = Math.Abs(newSettings.m_Rect.left - newSettings.m_Rect.right);
-            m_nHeight = Math.Abs(newSettings.m_Rect.top - newSettings.m_Rect.bottom);
-            m_CaptureSettings = newSettings;
-
-            m_Adapter = m_Factory.GetAdapter1(m_NumAdapter);
-            m_Device = new Device(m_Adapter);
-
-            if (m_Output != null) m_Output.Dispose();
-            m_Output = null;
-
-            Output output = m_Adapter.GetOutput(m_NumOutput);
-            m_Output = output.QueryInterface<Output1>();
-
-            Texture2DDescription textureDesc = new Texture2DDescription
+            lock (m_Filter.FilterLock)
             {
-                CpuAccessFlags = CpuAccessFlags.Read,
-                BindFlags = BindFlags.None,
-                Format = Format.B8G8R8A8_UNorm,
-                Width = m_nWidth,
-                Height = m_nHeight,
-                OptionFlags = ResourceOptionFlags.None,
-                MipLevels = 1,
-                ArraySize = 1,
-                SampleDescription = { Count = 1, Quality = 0 },
-                Usage = ResourceUsage.Staging
-            };
+                m_NumAdapter = newSettings.m_Adapter;
+                m_NumOutput = newSettings.m_Output;
+                m_nWidth = Math.Abs(newSettings.m_Rect.left - newSettings.m_Rect.right);
+                m_nHeight = Math.Abs(newSettings.m_Rect.top - newSettings.m_Rect.bottom);
+                m_CaptureSettings = newSettings;
 
-            m_ScreenTexture = new Texture2D(m_Device, textureDesc);
+                if (m_Adapter != null) m_Adapter.Dispose();
+                m_Adapter = m_Factory.GetAdapter1(m_NumAdapter);
 
-            if (m_DuplicatedOutput != null) m_DuplicatedOutput.Dispose();
-            m_DuplicatedOutput = null;
-            m_DuplicatedOutput = m_Output.DuplicateOutput(m_Device);
+                if (m_Device != null) m_Device.Dispose();
+                m_Device = new Device(m_Adapter);
 
-            AMMediaType am = new AMMediaType();
-            GetMediaType(ref am);
+                if (m_Output != null) m_Output.Dispose();
+                m_Output = m_Adapter.GetOutput(m_NumOutput).QueryInterface<Output1>();
 
-            SetFormat(am);
+                Texture2DDescription textureDesc = new Texture2DDescription
+                {
+                    CpuAccessFlags = CpuAccessFlags.Read,
+                    BindFlags = BindFlags.None,
+                    Format = Format.B8G8R8A8_UNorm,
+                    Width = m_nWidth,
+                    Height = m_nHeight,
+                    OptionFlags = ResourceOptionFlags.None,
+                    MipLevels = 1,
+                    ArraySize = 1,
+                    SampleDescription = { Count = 1, Quality = 0 },
+                    Usage = ResourceUsage.Staging
+                };
 
-            return S_OK;
+                if (m_ScreenTexture != null) m_ScreenTexture.Dispose();
+                m_ScreenTexture = new Texture2D(m_Device, textureDesc);
+
+                if (m_DuplicatedOutput != null) m_DuplicatedOutput.Dispose();
+                m_DuplicatedOutput = m_Output.DuplicateOutput(m_Device);
+
+                AMMediaType am = new AMMediaType();
+                GetMediaType(ref am);
+
+                return (HRESULT)SetFormat(am);
+            }
         }
 
         public override int GetMediaType(ref AMMediaType pMediaType)

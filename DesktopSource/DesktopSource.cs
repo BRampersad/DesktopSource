@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DirectShow;
 using DirectShow.BaseClasses;
@@ -11,8 +12,10 @@ namespace DesktopSource
     [ComVisible(true)]
     [Guid("0160C224-D299-4EA0-8E2B-53A298E72909")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [System.Security.SuppressUnmanagedCodeSecurity]
     public interface IChangeCaptureSettings
     {
+        [PreserveSig]
         HRESULT ChangeCaptureSettings(CaptureSettings newSettings);
     }
 
@@ -38,6 +41,8 @@ namespace DesktopSource
 
         public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
         {
+            if (IsActive) return VFW_E_WRONG_STATE;
+
             return ((DesktopStream) Pins[0]).ChangeCaptureSettings(newSettings);
         }
 

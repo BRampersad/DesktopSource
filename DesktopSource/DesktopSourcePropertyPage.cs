@@ -89,9 +89,11 @@ namespace DesktopSource
                 StringBuilder sb = new StringBuilder(size);
                 GetWindowText(hWnd, sb, size);
 
-                CaptureSettings captureSettings = new CaptureSettings();
-                captureSettings.m_Adapter = 0;
-                captureSettings.m_Output = 0;
+                CaptureSettings captureSettings = new CaptureSettings
+                {
+                    m_Adapter = 0,
+                    m_Output = 0
+                };
 
                 RECT rct;
 
@@ -101,7 +103,7 @@ namespace DesktopSource
 
                 CaptureItem captureItem = new CaptureItem(sb.ToString(), captureSettings);
 
-                this.captureMethodCombo.Items.Add(captureItem);
+                captureMethodCombo.Items.Add(captureItem);
             }
 
             return true; 
@@ -116,7 +118,7 @@ namespace DesktopSource
 
         public override HRESULT OnDisconnect()
         {
-            m_FilterSettings = null;
+            Marshal.ReleaseComObject(m_FilterSettings);
 
             return HRESULT.NOERROR;
         }
@@ -126,7 +128,7 @@ namespace DesktopSource
             if (m_FilterSettings != null && captureMethodCombo.SelectedItem != null)
             {
                 CaptureItem setting = (captureMethodCombo.SelectedItem as CaptureItem);
-                return (HRESULT) m_FilterSettings.ChangeCaptureSettings(setting.m_CaptureSettings);
+                if (setting != null) return m_FilterSettings.ChangeCaptureSettings(setting.m_CaptureSettings);
             }
 
             return HRESULT.NOERROR;
