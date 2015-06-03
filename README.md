@@ -5,6 +5,7 @@ A DirectShow source filter that outputs the monitor.
 ## Requirements
 
 Windows 8 (Currently)
+.NET Framework 4
 
 ## Installation
 
