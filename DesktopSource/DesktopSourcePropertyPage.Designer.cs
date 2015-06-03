@@ -50,126 +50,141 @@
             // captureMethodCombo
             // 
             this.captureMethodCombo.FormattingEnabled = true;
-            this.captureMethodCombo.Location = new System.Drawing.Point(149, 10);
+            this.captureMethodCombo.Location = new System.Drawing.Point(99, 6);
+            this.captureMethodCombo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.captureMethodCombo.Name = "captureMethodCombo";
-            this.captureMethodCombo.Size = new System.Drawing.Size(244, 28);
+            this.captureMethodCombo.Size = new System.Drawing.Size(164, 21);
             this.captureMethodCombo.TabIndex = 0;
             this.captureMethodCombo.SelectedIndexChanged += new System.EventHandler(this.captureMethodCombo_SelectedIndexChanged);
             // 
             // captureLabel
             // 
             this.captureLabel.AutoSize = true;
-            this.captureLabel.Location = new System.Drawing.Point(12, 13);
+            this.captureLabel.Location = new System.Drawing.Point(8, 8);
+            this.captureLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.captureLabel.Name = "captureLabel";
-            this.captureLabel.Size = new System.Drawing.Size(66, 20);
+            this.captureLabel.Size = new System.Drawing.Size(44, 13);
             this.captureLabel.TabIndex = 1;
             this.captureLabel.Text = "Capture";
             // 
             // captureSettingsLbl
             // 
             this.captureSettingsLbl.AutoSize = true;
-            this.captureSettingsLbl.Location = new System.Drawing.Point(12, 51);
+            this.captureSettingsLbl.Location = new System.Drawing.Point(8, 33);
+            this.captureSettingsLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.captureSettingsLbl.Name = "captureSettingsLbl";
-            this.captureSettingsLbl.Size = new System.Drawing.Size(129, 20);
+            this.captureSettingsLbl.Size = new System.Drawing.Size(85, 13);
             this.captureSettingsLbl.TabIndex = 2;
             this.captureSettingsLbl.Text = "Capture Settings";
             // 
             // adapterLbl
             // 
             this.adapterLbl.AutoSize = true;
-            this.adapterLbl.Location = new System.Drawing.Point(149, 51);
+            this.adapterLbl.Location = new System.Drawing.Point(99, 33);
+            this.adapterLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.adapterLbl.Name = "adapterLbl";
-            this.adapterLbl.Size = new System.Drawing.Size(66, 20);
+            this.adapterLbl.Size = new System.Drawing.Size(44, 13);
             this.adapterLbl.TabIndex = 3;
             this.adapterLbl.Text = "Adapter";
             // 
             // outputLbl
             // 
             this.outputLbl.AutoSize = true;
-            this.outputLbl.Location = new System.Drawing.Point(150, 83);
+            this.outputLbl.Location = new System.Drawing.Point(100, 54);
+            this.outputLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.outputLbl.Name = "outputLbl";
-            this.outputLbl.Size = new System.Drawing.Size(58, 20);
+            this.outputLbl.Size = new System.Drawing.Size(39, 13);
             this.outputLbl.TabIndex = 4;
             this.outputLbl.Text = "Output";
             // 
             // regionLbl
             // 
             this.regionLbl.AutoSize = true;
-            this.regionLbl.Location = new System.Drawing.Point(149, 123);
+            this.regionLbl.Location = new System.Drawing.Point(99, 80);
+            this.regionLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.regionLbl.Name = "regionLbl";
-            this.regionLbl.Size = new System.Drawing.Size(60, 20);
+            this.regionLbl.Size = new System.Drawing.Size(41, 13);
             this.regionLbl.TabIndex = 5;
             this.regionLbl.Text = "Region";
             // 
             // topLbl
             // 
             this.topLbl.AutoSize = true;
-            this.topLbl.Location = new System.Drawing.Point(236, 123);
+            this.topLbl.Location = new System.Drawing.Point(157, 80);
+            this.topLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.topLbl.Name = "topLbl";
-            this.topLbl.Size = new System.Drawing.Size(36, 20);
+            this.topLbl.Size = new System.Drawing.Size(26, 13);
             this.topLbl.TabIndex = 8;
             this.topLbl.Text = "Top";
             // 
             // leftLbl
             // 
             this.leftLbl.AutoSize = true;
-            this.leftLbl.Location = new System.Drawing.Point(235, 156);
+            this.leftLbl.Location = new System.Drawing.Point(157, 101);
+            this.leftLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.leftLbl.Name = "leftLbl";
-            this.leftLbl.Size = new System.Drawing.Size(37, 20);
+            this.leftLbl.Size = new System.Drawing.Size(25, 13);
             this.leftLbl.TabIndex = 9;
             this.leftLbl.Text = "Left";
             // 
             // bottomLbl
             // 
             this.bottomLbl.AutoSize = true;
-            this.bottomLbl.Location = new System.Drawing.Point(217, 188);
+            this.bottomLbl.Location = new System.Drawing.Point(145, 122);
+            this.bottomLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.bottomLbl.Name = "bottomLbl";
-            this.bottomLbl.Size = new System.Drawing.Size(61, 20);
+            this.bottomLbl.Size = new System.Drawing.Size(40, 13);
             this.bottomLbl.TabIndex = 10;
             this.bottomLbl.Text = "Bottom";
             // 
             // rightLbl
             // 
             this.rightLbl.AutoSize = true;
-            this.rightLbl.Location = new System.Drawing.Point(231, 221);
+            this.rightLbl.Location = new System.Drawing.Point(154, 144);
+            this.rightLbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.rightLbl.Name = "rightLbl";
-            this.rightLbl.Size = new System.Drawing.Size(47, 20);
+            this.rightLbl.Size = new System.Drawing.Size(32, 13);
             this.rightLbl.TabIndex = 11;
             this.rightLbl.Text = "Right";
             // 
             // topTextBox
             // 
-            this.topTextBox.Location = new System.Drawing.Point(293, 123);
+            this.topTextBox.Location = new System.Drawing.Point(195, 80);
+            this.topTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.topTextBox.Name = "topTextBox";
-            this.topTextBox.Size = new System.Drawing.Size(100, 26);
+            this.topTextBox.Size = new System.Drawing.Size(68, 20);
             this.topTextBox.TabIndex = 12;
             // 
             // leftTextBox
             // 
-            this.leftTextBox.Location = new System.Drawing.Point(293, 156);
+            this.leftTextBox.Location = new System.Drawing.Point(195, 101);
+            this.leftTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.leftTextBox.Name = "leftTextBox";
-            this.leftTextBox.Size = new System.Drawing.Size(100, 26);
+            this.leftTextBox.Size = new System.Drawing.Size(68, 20);
             this.leftTextBox.TabIndex = 13;
             // 
             // bottomTextBox
             // 
-            this.bottomTextBox.Location = new System.Drawing.Point(293, 188);
+            this.bottomTextBox.Location = new System.Drawing.Point(195, 122);
+            this.bottomTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.bottomTextBox.Name = "bottomTextBox";
-            this.bottomTextBox.Size = new System.Drawing.Size(100, 26);
+            this.bottomTextBox.Size = new System.Drawing.Size(68, 20);
             this.bottomTextBox.TabIndex = 14;
             // 
             // rightTextBox
             // 
-            this.rightTextBox.Location = new System.Drawing.Point(293, 221);
+            this.rightTextBox.Location = new System.Drawing.Point(195, 144);
+            this.rightTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.rightTextBox.Name = "rightTextBox";
-            this.rightTextBox.Size = new System.Drawing.Size(100, 26);
+            this.rightTextBox.Size = new System.Drawing.Size(68, 20);
             this.rightTextBox.TabIndex = 15;
             // 
             // refreshBtn
             // 
-            this.refreshBtn.Location = new System.Drawing.Point(16, 221);
+            this.refreshBtn.Location = new System.Drawing.Point(11, 144);
+            this.refreshBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.refreshBtn.Name = "refreshBtn";
-            this.refreshBtn.Size = new System.Drawing.Size(75, 26);
+            this.refreshBtn.Size = new System.Drawing.Size(50, 17);
             this.refreshBtn.TabIndex = 18;
             this.refreshBtn.Text = "Refresh";
             this.refreshBtn.UseVisualStyleBackColor = true;
@@ -177,23 +192,25 @@
             // 
             // adapterTxtBox
             // 
-            this.adapterTxtBox.Location = new System.Drawing.Point(221, 51);
+            this.adapterTxtBox.Location = new System.Drawing.Point(147, 33);
+            this.adapterTxtBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.adapterTxtBox.Name = "adapterTxtBox";
-            this.adapterTxtBox.Size = new System.Drawing.Size(172, 26);
+            this.adapterTxtBox.Size = new System.Drawing.Size(116, 20);
             this.adapterTxtBox.TabIndex = 19;
             // 
             // outputTxtBox
             // 
-            this.outputTxtBox.Location = new System.Drawing.Point(221, 83);
+            this.outputTxtBox.Location = new System.Drawing.Point(147, 54);
+            this.outputTxtBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.outputTxtBox.Name = "outputTxtBox";
-            this.outputTxtBox.Size = new System.Drawing.Size(172, 26);
+            this.outputTxtBox.Size = new System.Drawing.Size(116, 20);
             this.outputTxtBox.TabIndex = 20;
             // 
             // DesktopSourcePropertyPage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(412, 261);
+            this.ClientSize = new System.Drawing.Size(275, 170);
             this.Controls.Add(this.outputTxtBox);
             this.Controls.Add(this.adapterTxtBox);
             this.Controls.Add(this.refreshBtn);
@@ -211,9 +228,11 @@
             this.Controls.Add(this.captureSettingsLbl);
             this.Controls.Add(this.captureLabel);
             this.Controls.Add(this.captureMethodCombo);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "DesktopSourcePropertyPage";
             this.Text = "DesktopSourcePropertyPage";
             this.Title = "DesktopSourcePropertyPage";
+            this.Load += new System.EventHandler(this.DesktopSourcePropertyPage_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

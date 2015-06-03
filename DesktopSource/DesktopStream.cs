@@ -19,19 +19,32 @@ namespace DesktopSource
     [Guid("47A3CC6B-887D-4DEA-9654-002D1190EBC7")]
     public class DesktopStream : SourceStream, IAMStreamConfig
     {
-        public int m_nWidth { get; private set; }
-        public int m_nHeight { get; private set; }
+        public int m_nWidth
+        {
+            get { return Math.Abs(m_CaptureSettings.m_Rect.left - m_CaptureSettings.m_Rect.right); }
+        }
+
+        public int m_nHeight
+        {
+            get { return Math.Abs(m_CaptureSettings.m_Rect.top - m_CaptureSettings.m_Rect.bottom); }
+        }
+
         public long m_nAvgTimePerFrame { get; private set; }
+
         public long m_lLastSampleTime { get; private set; }
+
         public CaptureSettings m_CaptureSettings { get; set; }
 
-        protected int m_NumAdapter;
-        protected int m_NumOutput;
         protected Factory1 m_Factory;
+
         protected Adapter1 m_Adapter;
+
         protected Device m_Device;
+
         protected Output1 m_Output;
+
         protected Texture2D m_ScreenTexture;
+
         protected OutputDuplication m_DuplicatedOutput;
 
         public DesktopStream(string _name, BaseSourceFilter _filter) : base(_name, _filter)
@@ -39,38 +52,68 @@ namespace DesktopSource
             m_Factory = new Factory1();
 
             m_nAvgTimePerFrame = UNITS / 30;
+            m_lLastSampleTime = 0L;
 
-            CaptureSettings defaultSettings = new CaptureSettings();
-            defaultSettings.m_Adapter = 0;
-            defaultSettings.m_Output = 0;
-            defaultSettings.m_Rect = new DsRect(Screen.AllScreens[0].Bounds);
-
-            ChangeCaptureSettings(defaultSettings);
+            m_CaptureSettings = new CaptureSettings
+            {
+                m_Adapter = 0,
+                m_Output = 0,
+                m_Rect = new DsRect(Screen.AllScreens[0].Bounds)
+            };
         }
 
+        public override int Inactive()
+        {
+            lock (m_Filter.FilterLock)
+            {
+                m_Adapter.Dispose();
+                m_Adapter = null;
 
+                m_Device.Dispose();
+                m_Device = null;
 
+                m_Output.Dispose();
+                m_Output = null;
 
+                m_ScreenTexture.Dispose();
+                m_ScreenTexture = null;
+
+                m_DuplicatedOutput.Dispose();
+                m_DuplicatedOutput = null;
+
+                return base.Inactive();
+            }
+        }
+
+        public override int Active()
+        {
+            lock(m_Filter.FilterLock)
+            {
+                ChangeCaptureSettings(m_CaptureSettings);
+
+                return base.Active();
+            }
+        }
 
         public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
         {
-
             lock (m_Filter.FilterLock)
             {
-                m_NumAdapter = newSettings.m_Adapter;
-                m_NumOutput = newSettings.m_Output;
-                m_nWidth = Math.Abs(newSettings.m_Rect.left - newSettings.m_Rect.right);
-                m_nHeight = Math.Abs(newSettings.m_Rect.top - newSettings.m_Rect.bottom);
+                if (m_Filter.IsActive)
+                {
+                    return VFW_E_WRONG_STATE;
+                }
+
                 m_CaptureSettings = newSettings;
 
                 if (m_Adapter != null) m_Adapter.Dispose();
-                m_Adapter = m_Factory.GetAdapter1(m_NumAdapter);
+                m_Adapter = m_Factory.GetAdapter1(m_CaptureSettings.m_Adapter);
 
                 if (m_Device != null) m_Device.Dispose();
                 m_Device = new Device(m_Adapter);
 
                 if (m_Output != null) m_Output.Dispose();
-                m_Output = m_Adapter.GetOutput(m_NumOutput).QueryInterface<Output1>();
+                m_Output = m_Adapter.GetOutput(m_CaptureSettings.m_Output).QueryInterface<Output1>();
 
                 Texture2DDescription textureDesc = new Texture2DDescription
                 {
@@ -157,9 +200,13 @@ namespace DesktopSource
                 1
             );
 
-            var screenTextureAsResource = m_ScreenTexture.QueryInterface<SharpDX.Direct3D11.Resource>();
-
-            m_Device.ImmediateContext.CopySubresourceRegion(screenResource.QueryInterface<SharpDX.Direct3D11.Resource>(), 0, region, screenTextureAsResource, 0, 0, 0, 0);
+            m_Device.ImmediateContext.CopySubresourceRegion(
+                screenResource.QueryInterface<SharpDX.Direct3D11.Resource>(), 
+                0,
+                region, 
+                m_ScreenTexture.QueryInterface<SharpDX.Direct3D11.Resource>(), 
+                0
+            );
 
             DataBox mapSource = m_Device.ImmediateContext.MapSubresource(m_ScreenTexture, 0, MapMode.Read, MapFlags.None);
 

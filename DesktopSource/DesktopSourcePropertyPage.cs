@@ -42,10 +42,6 @@ namespace DesktopSource
         public DesktopSourcePropertyPage()
         {
             InitializeComponent();
-
-            captureMethodCombo.Items.Clear();
-            InitializeCaptureMonitors();
-            InitializeCaptureWindows();
         }
 
         private void InitializeCaptureWindows()
@@ -111,6 +107,8 @@ namespace DesktopSource
 
         public override HRESULT OnConnect(IntPtr pUnknown)
         {
+            if (pUnknown == IntPtr.Zero) return HRESULT.E_POINTER;
+
             m_FilterSettings = (IChangeCaptureSettings) Marshal.GetObjectForIUnknown(pUnknown);
 
             return HRESULT.NOERROR;
@@ -118,7 +116,7 @@ namespace DesktopSource
 
         public override HRESULT OnDisconnect()
         {
-            Marshal.ReleaseComObject(m_FilterSettings);
+            m_FilterSettings = null;
 
             return HRESULT.NOERROR;
         }
@@ -128,7 +126,12 @@ namespace DesktopSource
             if (m_FilterSettings != null && captureMethodCombo.SelectedItem != null)
             {
                 CaptureItem setting = (captureMethodCombo.SelectedItem as CaptureItem);
-                if (setting != null) return m_FilterSettings.ChangeCaptureSettings(setting.m_CaptureSettings);
+                if (setting != null)
+                {
+                    Dirty = false;
+
+                    return m_FilterSettings.ChangeCaptureSettings(setting.m_CaptureSettings);
+                }
             }
 
             return HRESULT.NOERROR;
@@ -146,17 +149,21 @@ namespace DesktopSource
             public int Bottom;
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)] 
-        protected static extern int GetWindowText(IntPtr hWnd, StringBuilder strText, int maxCount); 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)] 
-        protected static extern int GetWindowTextLength(IntPtr hWnd); 
-        [DllImport("user32.dll")] 
-        protected static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam); 
-        [DllImport("user32.dll")] 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Winapi)] 
+        protected static extern int GetWindowText(IntPtr hWnd, StringBuilder strText, int maxCount);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Winapi)] 
+        protected static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi)] 
+        protected static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
+
+        [DllImport("user32.dll", CallingConvention = CallingConvention.Winapi)] 
         protected static extern bool IsWindowVisible(IntPtr hWnd); 
+
         #endregion
 
         private void captureMethodCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -169,10 +176,18 @@ namespace DesktopSource
             rightTextBox.Text = newSettings.m_Rect.right.ToString();
             bottomTextBox.Text = newSettings.m_Rect.bottom.ToString();
 
-            this.Dirty = true;
+            Dirty = true;
         }
 
         private void refreshBtn_Click(object sender, EventArgs e)
+        {
+            captureMethodCombo.Items.Clear();
+
+            InitializeCaptureMonitors();
+            InitializeCaptureWindows();
+        }
+
+        private void DesktopSourcePropertyPage_Load(object sender, EventArgs e)
         {
             captureMethodCombo.Items.Clear();
 
