@@ -17,10 +17,9 @@ namespace DesktopSource
     public interface IChangeCaptureSettings
     {
         [PreserveSig]
-        HRESULT ChangeCaptureSettings(CaptureSettings newSettings);
+        HRESULT ChangeCaptureSettings([In] CaptureSettings newSettings);
     }
 
-    [ComVisible(true)]
     [StructLayout(LayoutKind.Sequential)]
     public struct CaptureSettings
     {
@@ -42,6 +41,7 @@ namespace DesktopSource
 
         public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
         {
+            
             return ((DesktopStream) Pins[0]).ChangeCaptureSettings(newSettings);
         }
 

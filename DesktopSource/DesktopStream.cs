@@ -17,7 +17,7 @@ namespace DesktopSource
     // Output Pin (STreams the desktop frames)
     [ComVisible(true)]
     [Guid("47A3CC6B-887D-4DEA-9654-002D1190EBC7")]
-    public class DesktopStream : SourceStream, IAMStreamConfig
+    public class DesktopStream : SourceStream
     {
         public int m_nWidth
         {
@@ -47,52 +47,23 @@ namespace DesktopSource
 
         protected OutputDuplication m_DuplicatedOutput;
 
+        protected CaptureSettings m_DefaultSettings = new CaptureSettings
+        {
+            m_Adapter = 0,
+            m_Output = 0,
+            m_Rect = new DsRect(Screen.AllScreens[0].Bounds)
+        };
+
         public DesktopStream(string _name, BaseSourceFilter _filter) : base(_name, _filter)
         {
             m_Factory = new Factory1();
 
-            m_nAvgTimePerFrame = UNITS / 30;
+            m_nAvgTimePerFrame = UNITS / 30; // 30 FPS 
             m_lLastSampleTime = 0L;
 
-            m_CaptureSettings = new CaptureSettings
-            {
-                m_Adapter = 0,
-                m_Output = 0,
-                m_Rect = new DsRect(Screen.AllScreens[0].Bounds)
-            };
-        }
+            m_CaptureSettings = m_DefaultSettings;
 
-        public override int Inactive()
-        {
-            lock (m_Filter.FilterLock)
-            {
-                m_Adapter.Dispose();
-                m_Adapter = null;
-
-                m_Device.Dispose();
-                m_Device = null;
-
-                m_Output.Dispose();
-                m_Output = null;
-
-                m_ScreenTexture.Dispose();
-                m_ScreenTexture = null;
-
-                m_DuplicatedOutput.Dispose();
-                m_DuplicatedOutput = null;
-
-                return base.Inactive();
-            }
-        }
-
-        public override int Active()
-        {
-            lock(m_Filter.FilterLock)
-            {
-                ChangeCaptureSettings(m_CaptureSettings);
-
-                return base.Active();
-            }
+            ChangeCaptureSettings(m_CaptureSettings);
         }
 
         public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
@@ -138,7 +109,7 @@ namespace DesktopSource
                 AMMediaType am = new AMMediaType();
                 GetMediaType(ref am);
 
-                return (HRESULT)SetFormat(am);
+                return (HRESULT)SetMediaType(am);
             }
         }
 
@@ -237,117 +208,6 @@ namespace DesktopSource
             m_Device.ImmediateContext.UnmapSubresource(m_ScreenTexture, 0);
             screenResource.Dispose();
             m_DuplicatedOutput.ReleaseFrame();
-
-            return NOERROR;
-        }
-
-        public int SetFormat(AMMediaType pmt)
-        {
-            if (m_Filter.IsActive) return VFW_E_WRONG_STATE;
-
-            HRESULT hr;
-            AMMediaType _newType = new AMMediaType(pmt);
-            AMMediaType _oldType = new AMMediaType(m_mt);
-
-            hr = (HRESULT)CheckMediaType(_newType);
-
-            if (FAILED(hr)) return hr;
-
-            m_mt.Set(_newType);
-
-            if (IsConnected)
-            {
-                hr = (HRESULT)Connected.QueryAccept(_newType);
-                if (SUCCEEDED(hr))
-                {
-                    hr = (HRESULT)m_Filter.ReconnectPin(this, _newType);
-                    if (SUCCEEDED(hr))
-                    {
-                        hr = (HRESULT)SetMediaType(_newType);
-                    }
-                    else
-                    {
-                        m_mt.Set(_oldType);
-                        m_Filter.ReconnectPin(this, _oldType);
-                    }
-                }
-            }
-            else
-            {
-                hr = (HRESULT)SetMediaType(_newType);
-            }
-
-            return hr;
-        }
-
-        public int GetFormat(out AMMediaType pmt)
-        {
-            pmt = new AMMediaType(m_mt);
-
-            return NOERROR;
-        }
-
-        public int GetNumberOfCapabilities(IntPtr piCount, IntPtr piSize)
-        {
-            if (piCount != IntPtr.Zero)
-            {
-                Marshal.WriteInt32(piCount, 1);
-            }
-
-            if (piSize != IntPtr.Zero)
-            {
-                Marshal.WriteInt32(piSize, Marshal.SizeOf(typeof(VideoStreamConfigCaps)));
-            }
-
-            return NOERROR;
-        }
-
-        public int GetStreamCaps(int iIndex, IntPtr ppmt, IntPtr pSCC)
-        {
-            AMMediaType pmt = new AMMediaType(m_mt);
-
-            VideoStreamConfigCaps _caps = new VideoStreamConfigCaps();
-            _caps.guid = FormatType.VideoInfo;
-            _caps.VideoStandard = AnalogVideoStandard.None;
-            _caps.InputSize.Width = m_nWidth;
-            _caps.InputSize.Height = m_nHeight;
-            _caps.MinCroppingSize.Width = m_nWidth;
-            _caps.MinCroppingSize.Height = m_nHeight;
-
-            _caps.MaxCroppingSize.Width = m_nWidth;
-            _caps.MaxCroppingSize.Height = m_nHeight;
-            _caps.CropGranularityX = m_nWidth;
-            _caps.CropGranularityY = m_nHeight;
-            _caps.CropAlignX = 0;
-            _caps.CropAlignY = 0;
-
-            _caps.MinOutputSize.Width = _caps.MinCroppingSize.Width;
-            _caps.MinOutputSize.Height = _caps.MinCroppingSize.Height;
-            _caps.MaxOutputSize.Width = _caps.MaxCroppingSize.Width;
-            _caps.MaxOutputSize.Height = _caps.MaxCroppingSize.Height;
-            _caps.OutputGranularityX = _caps.CropGranularityX;
-            _caps.OutputGranularityY = _caps.CropGranularityY;
-            _caps.StretchTapsX = 0;
-            _caps.StretchTapsY = 0;
-            _caps.ShrinkTapsX = 0;
-            _caps.ShrinkTapsY = 0;
-            _caps.MinFrameInterval = m_nAvgTimePerFrame;
-            _caps.MaxFrameInterval = m_nAvgTimePerFrame;
-            _caps.MinBitsPerSecond = (_caps.MinOutputSize.Width * _caps.MinOutputSize.Height * 32) * (int)m_nAvgTimePerFrame;
-            _caps.MaxBitsPerSecond = (_caps.MaxOutputSize.Width * _caps.MaxOutputSize.Height * 32) * (int)m_nAvgTimePerFrame;
-
-
-            if (ppmt != IntPtr.Zero)
-            {
-                IntPtr _ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(pmt));
-                Marshal.StructureToPtr(pmt, _ptr, true);
-                Marshal.WriteIntPtr(ppmt, _ptr);
-            }
-
-            if (pSCC != IntPtr.Zero)
-            {
-                Marshal.StructureToPtr(_caps, pSCC, false);
-            }
 
             return NOERROR;
         }
