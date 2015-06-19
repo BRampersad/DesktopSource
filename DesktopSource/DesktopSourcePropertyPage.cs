@@ -14,41 +14,101 @@ using DirectShow.BaseClasses;
 using SharpDX.DXGI;
 using Sonic;
 
+
+/// <summary>
+/// 
+/// </summary>
 namespace DesktopSource
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     [ComVisible(true)]
     [Guid("BC7F9A0C-00DF-460F-A39E-DD9C9098411A")]
     public partial class DesktopSourcePropertyPage : BasePropertyPage
     {
+
+        /// <summary>
+        /// Gets or sets the m_ filter settings.
+        /// </summary>
+        /// <value>
+        /// The m_ filter settings.
+        /// </value>
         public IChangeCaptureSettings m_FilterSettings { get; set; }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         private class CaptureItem
         {
+
+            /// <summary>
+            /// Gets or sets the name of the m_.
+            /// </summary>
+            /// <value>
+            /// The name of the m_.
+            /// </value>
             public string m_Name { get; set; }
+
+
+            /// <summary>
+            /// Gets or sets the m_ capture settings.
+            /// </summary>
+            /// <value>
+            /// The m_ capture settings.
+            /// </value>
             public CaptureSettings m_CaptureSettings { get; set; }
 
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CaptureItem"/> class.
+            /// </summary>
+            /// <param name="name">The name.</param>
+            /// <param name="settings">The settings.</param>
             public CaptureItem(string name, CaptureSettings settings)
             {
                 m_Name = name;
                 m_CaptureSettings = settings;
             }
 
+
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String" /> that represents this instance.
+            /// </returns>
             public override string ToString()
             {
                 return m_Name;
             }
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DesktopSourcePropertyPage"/> class.
+        /// </summary>
         public DesktopSourcePropertyPage()
         {
             InitializeComponent();
         }
 
+
+
+        /// <summary>
+        /// Initializes the capture windows.
+        /// </summary>
         private void InitializeCaptureWindows()
         {
             EnumWindows(EnumWindows, IntPtr.Zero);
         }
 
+
+        /// <summary>
+        /// Initializes the capture monitors.
+        /// </summary>
         private void InitializeCaptureMonitors()
         {
 
@@ -76,6 +136,13 @@ namespace DesktopSource
             }
         }
 
+
+        /// <summary>
+        /// Enums the windows.
+        /// </summary>
+        /// <param name="hWnd">The h WND.</param>
+        /// <param name="lParam">The l parameter.</param>
+        /// <returns></returns>
         protected bool EnumWindows(IntPtr hWnd, IntPtr lParam)
         {
             int size = GetWindowTextLength(hWnd);
@@ -105,6 +172,12 @@ namespace DesktopSource
             return true; 
         }
 
+
+        /// <summary>
+        /// Called when [connect].
+        /// </summary>
+        /// <param name="pUnknown">The p unknown.</param>
+        /// <returns></returns>
         public override HRESULT OnConnect(IntPtr pUnknown)
         {
             if (pUnknown == IntPtr.Zero) return HRESULT.E_POINTER;
@@ -114,6 +187,11 @@ namespace DesktopSource
             return HRESULT.NOERROR;
         }
 
+
+        /// <summary>
+        /// Called when [disconnect].
+        /// </summary>
+        /// <returns></returns>
         public override HRESULT OnDisconnect()
         {
             m_FilterSettings = null;
@@ -121,6 +199,11 @@ namespace DesktopSource
             return HRESULT.NOERROR;
         }
 
+
+        /// <summary>
+        /// Called when [apply changes].
+        /// </summary>
+        /// <returns></returns>
         public override HRESULT OnApplyChanges()
         {
             if (m_FilterSettings != null && captureMethodCombo.SelectedItem != null)
@@ -138,6 +221,7 @@ namespace DesktopSource
         }
 
         #region API
+
         protected delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         [StructLayout(LayoutKind.Sequential)]
@@ -166,6 +250,12 @@ namespace DesktopSource
 
         #endregion
 
+
+        /// <summary>
+        /// Handles the SelectedIndexChanged event of the captureMethodCombo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void captureMethodCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             CaptureSettings newSettings = ((CaptureItem) captureMethodCombo.SelectedItem).m_CaptureSettings;
@@ -179,6 +269,12 @@ namespace DesktopSource
             Dirty = true;
         }
 
+
+        /// <summary>
+        /// Handles the Click event of the refreshBtn control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void refreshBtn_Click(object sender, EventArgs e)
         {
             captureMethodCombo.Items.Clear();
@@ -187,6 +283,12 @@ namespace DesktopSource
             InitializeCaptureWindows();
         }
 
+
+        /// <summary>
+        /// Handles the Load event of the DesktopSourcePropertyPage control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void DesktopSourcePropertyPage_Load(object sender, EventArgs e)
         {
             captureMethodCombo.Items.Clear();

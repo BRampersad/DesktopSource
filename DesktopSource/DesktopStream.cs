@@ -12,48 +12,125 @@ using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Resource = SharpDX.DXGI.Resource;
 
+
+/// <summary>
+/// The Main DesktopSource Namespace
+/// </summary>
 namespace DesktopSource
 {
-    // Output Pin (STreams the desktop frames)
+
+    /// <summary>
+    /// An OutputPin that Streams a Monitor or a subset of a Monitor.
+    /// </summary>
     [ComVisible(true)]
     [Guid("47A3CC6B-887D-4DEA-9654-002D1190EBC7")]
     public class DesktopStream : SourceStream
     {
+
+        /// <summary>
+        /// Gets the width of the capture region.
+        /// </summary>
+        /// <value>
+        /// The width of the capture region.
+        /// </value>
         public int m_nWidth
         {
             get { return Math.Abs(m_CaptureSettings.m_Rect.left - m_CaptureSettings.m_Rect.right); }
         }
 
+
+
+        /// <summary>
+        /// Gets the height of the capture region.
+        /// </summary>
+        /// <value>
+        /// The height of the capture region.
+        /// </value>
         public int m_nHeight
         {
             get { return Math.Abs(m_CaptureSettings.m_Rect.top - m_CaptureSettings.m_Rect.bottom); }
         }
 
+
+        /// <summary>
+        /// Gets the average time per frame.
+        /// </summary>
+        /// <value>
+        /// The average time per frame.
+        /// </value>
         public long m_nAvgTimePerFrame { get; private set; }
 
+
+        /// <summary>
+        /// Gets the last sample time.
+        /// </summary>
+        /// <value>
+        /// The last sample time.
+        /// </value>
         public long m_lLastSampleTime { get; private set; }
 
-        public CaptureSettings m_CaptureSettings { get; set; }
 
+        /// <summary>
+        /// Gets the current capture settings.
+        /// </summary>
+        /// <value>
+        /// The capture settings.
+        /// </value>
+        public CaptureSettings m_CaptureSettings { get; private set; }
+
+
+        /// <summary>
+        /// The ShatpDX factory
+        /// </summary>
         protected Factory1 m_Factory;
 
+
+        /// <summary>
+        /// The current video adapter
+        /// </summary>
         protected Adapter1 m_Adapter;
 
+
+        /// <summary>
+        /// The current GPU device
+        /// </summary>
         protected Device m_Device;
 
+
+        /// <summary>
+        /// The current display output
+        /// </summary>
         protected Output1 m_Output;
 
+
+        /// <summary>
+        /// The m_ screen texture
+        /// </summary>
         protected Texture2D m_ScreenTexture;
 
+
+        /// <summary>
+        /// The m_ duplicated output
+        /// </summary>
         protected OutputDuplication m_DuplicatedOutput;
 
-        protected CaptureSettings m_DefaultSettings = new CaptureSettings
+
+        /// <summary>
+        /// The m_ default settings
+        /// </summary>
+        protected readonly CaptureSettings m_DefaultSettings = new CaptureSettings
         {
             m_Adapter = 0,
             m_Output = 0,
             m_Rect = new DsRect(Screen.AllScreens[0].Bounds)
         };
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DesktopStream"/> class.
+        /// </summary>
+        /// <param name="_name">The _name.</param>
+        /// <param name="_filter">The _filter.</param>
         public DesktopStream(string _name, BaseSourceFilter _filter) : base(_name, _filter)
         {
             m_Factory = new Factory1();
@@ -66,6 +143,26 @@ namespace DesktopSource
             ChangeCaptureSettings(m_CaptureSettings);
         }
 
+
+        /// <summary>
+        /// Finalizes an instance of the <see cref="DesktopStream"/> class.
+        /// </summary>
+        ~DesktopStream()
+        {
+            if (m_Factory != null) m_Factory.Dispose();
+            if (m_Adapter != null) m_Adapter.Dispose();
+            if (m_Device != null) m_Device.Dispose();
+            if (m_Output != null) m_Output.Dispose();
+            if (m_ScreenTexture != null) m_ScreenTexture.Dispose();
+            if (m_DuplicatedOutput != null) m_DuplicatedOutput.Dispose();
+        }
+
+
+        /// <summary>
+        /// Changes the capture settings.
+        /// </summary>
+        /// <param name="newSettings">The new settings.</param>
+        /// <returns></returns>
         public HRESULT ChangeCaptureSettings(CaptureSettings newSettings)
         {
             lock (m_Filter.FilterLock)
@@ -80,11 +177,17 @@ namespace DesktopSource
                 if (m_Adapter != null) m_Adapter.Dispose();
                 m_Adapter = m_Factory.GetAdapter1(m_CaptureSettings.m_Adapter);
 
+                if (m_Adapter == null) return E_POINTER;
+
                 if (m_Device != null) m_Device.Dispose();
                 m_Device = new Device(m_Adapter);
 
+                if (m_Device == null) return E_POINTER;
+                
                 if (m_Output != null) m_Output.Dispose();
                 m_Output = m_Adapter.GetOutput(m_CaptureSettings.m_Output).QueryInterface<Output1>();
+
+                if (m_Output == null) return E_POINTER;
 
                 Texture2DDescription textureDesc = new Texture2DDescription
                 {
@@ -103,16 +206,23 @@ namespace DesktopSource
                 if (m_ScreenTexture != null) m_ScreenTexture.Dispose();
                 m_ScreenTexture = new Texture2D(m_Device, textureDesc);
 
+                if (m_ScreenTexture == null) return E_POINTER;
+
                 if (m_DuplicatedOutput != null) m_DuplicatedOutput.Dispose();
                 m_DuplicatedOutput = m_Output.DuplicateOutput(m_Device);
 
-                AMMediaType am = new AMMediaType();
-                GetMediaType(ref am);
+                if (m_DuplicatedOutput == null) return E_POINTER;
 
-                return (HRESULT)SetMediaType(am);
+                return (HRESULT)ReconnectPin();
             }
         }
 
+
+        /// <summary>
+        /// Gets the type of the media.
+        /// </summary>
+        /// <param name="pMediaType">Type of the p media.</param>
+        /// <returns></returns>
         public override int GetMediaType(ref AMMediaType pMediaType)
         {
             pMediaType.majorType = MediaType.Video;
@@ -139,6 +249,13 @@ namespace DesktopSource
             return NOERROR;
         }
 
+
+        /// <summary>
+        /// Decides the size of the buffer.
+        /// </summary>
+        /// <param name="pAlloc">The p alloc.</param>
+        /// <param name="prop">The property.</param>
+        /// <returns></returns>
         public override int DecideBufferSize(ref IMemAllocatorImpl pAlloc, ref AllocatorProperties prop)
         {
             AllocatorProperties _actual = new AllocatorProperties();
@@ -155,6 +272,12 @@ namespace DesktopSource
             return hr;
         }
 
+
+        /// <summary>
+        /// Fills the buffer.
+        /// </summary>
+        /// <param name="pSample">The p sample.</param>
+        /// <returns></returns>
         public override int FillBuffer(ref IMediaSampleImpl pSample)
         {
             Resource screenResource;

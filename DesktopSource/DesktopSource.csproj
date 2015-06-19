@@ -51,8 +51,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseClassesNET">
-      <HintPath>..\..\..\..\Desktop\BaseClasses\Sources\BaseClasses\bin\x86\Debug\BaseClassesNET.dll</HintPath>
+    <Reference Include="BaseClassesNET, Version=1.0.0.6, Culture=neutral, PublicKeyToken=07c9e96a342153d6, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Documents\Visual Studio 2013\Projects\BaseClasses\Sources\BaseClasses\bin\x86\Debug\BaseClassesNET.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
       <HintPath>packages\SharpDX.3.0.0-alpha01\lib\net45\SharpDX.dll</HintPath>
