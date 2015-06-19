@@ -7,6 +7,10 @@ A DirectShow source filter that outputs the monitor.
 Windows 8 (Currently)
 .NET Framework 4
 
+## History
+
+Version 1.0: (Windows 8 SUpport, Only outputs entire desktop or region of a desktop at a constant framerate)
+
 ## Installation
 
 Run Install.bat from an elevated command prompt.
@@ -26,10 +30,6 @@ Select "Desktop Source" as a Source filter in any DirectShow application (GraphE
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request
-
-## History
-
-Version 1.0: (Windows 8 SUpport, Only outputs entire desktop at constant framerate)
 
 ## Credits
 
